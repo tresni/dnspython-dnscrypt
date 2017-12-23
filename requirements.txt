@@ -1,0 +1,2 @@
+dnspython==1.15.0
+PyNaCl==1.2.1

@@ -4,10 +4,12 @@ dnspython-dnscrypt
 
 This library is designed to make using DNSCrypt in Python easy and compatible
 with dnspython_.  It provides a ``dns.resolver.Resolver``-style interface which
-mixes in the ``dns.query.udp`` and ``dns.query.tcp`` functions.
+mixes-in the ``dns.query.udp`` and ``dns.query.tcp`` functions.
 
 >>> import dnscrypt
->>> r = dnscrypt.Resolver('208.67.222.222', '2.dnscrypt-cert.opendns.com', 'B735:1140:206F:225D:3E2B:D822:D7FD:691E:A1C3:3CC8:D666:8D0C:BE04:BFAB:CA43:FB79', port=53, timeout=5)
+>>> r = dnscrypt.Resolver('208.67.222.222', '2.dnscrypt-cert.opendns.com',
+... 'B735:1140:206F:225D:3E2B:D822:D7FD:691E:A1C3:3CC8:D666:8D0C:BE04:BFAB:CA43:FB79',
+... port=53, timeout=5)
 >>> print r.query('www.google.com')
 <dns.resolver.Answer object at 0x103b6f450>
 >>> import dns.message
@@ -63,7 +65,7 @@ The biggest thing is that this is a very basic implementation of
 drop in replacement. (e.g. I did not implement the
 ``use_tsig``/``use_edns``/``set_flags`` functions, instead use
 ``dns.message.Message`` and ``dnscrypt.resolver.tcp`` or
-``dnscrypr.resolver.udp``.)
+``dnscrypt.resolver.udp``.)
 
 .. _dnspython: http://www.dnspython.org
 .. _dns.resolver.Resolver.query: http://www.dnspython.org/docs/1.15.0/dns.resolver.Resolver-class.html#query

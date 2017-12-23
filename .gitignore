@@ -1,2 +1,4 @@
 *.pyc
 dnscrypt-resolvers.csv
+dist/*
+MANIFEST

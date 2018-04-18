@@ -154,6 +154,7 @@ class Resolver(object):
             qname = qname.concatenate(dns.name.root)
 
         query = dns.message.make_query(qname, rdtype=rdtype, rdclass=rdclass)
+        response = None
         try:
             tcp_attempt = False
             if tcp or self.tcp_only:

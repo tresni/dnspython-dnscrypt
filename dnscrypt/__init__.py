@@ -262,7 +262,6 @@ class Resolver(object):
             expiration = dns.query._compute_expiration(timeout)
             s.setblocking(0)
             if source is not None:
-                print source
                 s.bind(source)
             dns.query._wait_for_writable(s, expiration)
             begin_time = time.time()

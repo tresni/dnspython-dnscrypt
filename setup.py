@@ -30,6 +30,8 @@ setup(name='dnscrypt',
       install_requires=['dnspython == 1.15.0',
                         'PyNaCl == 1.2.1'],
       classifiers=[
+          "Programming Language :: Python :: 2",
+          "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3",
           "Programming Language :: Python :: 3.4"
       ])

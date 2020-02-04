@@ -16,7 +16,7 @@
 
 from distutils.core import setup
 
-version = '1.0.1'
+version = '2.0.0'
 
 setup(name='dnscrypt',
       version=version,
@@ -27,11 +27,9 @@ setup(name='dnscrypt',
       long_description=open('README.rst').read(),
       license='ISC',
       packages=['dnscrypt', ],
-      install_requires=['dnspython == 1.15.0',
-                        'PyNaCl == 1.2.1'],
+      install_requires=['dnspython >= 1.15.0',
+                        'PyNaCl >= 1.2.1'],
       classifiers=[
-          "Programming Language :: Python :: 2",
-          "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3",
           "Programming Language :: Python :: 3.4"
       ])

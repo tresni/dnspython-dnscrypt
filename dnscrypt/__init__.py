@@ -40,8 +40,8 @@ import nacl.exceptions
 DNSCRYPT_MINIMUM_SIZE = 256
 DNSCRYPT_MODULO_SIZE = 64
 DNSCRYPT_NONCE_SIZE = 12
-DNSCRYPT_RESOLVER_MAGIC = 'r6fnvWj8'
-DNSCRYPT_CERT_MAGIC = 'DNSC'
+DNSCRYPT_RESOLVER_MAGIC = b'r6fnvWj8'
+DNSCRYPT_CERT_MAGIC = b'DNSC'
 
 
 class Resolver(object):
@@ -66,15 +66,15 @@ class Resolver(object):
         try:
             vk = VerifyKey(provider_pk.replace(':', '').lower(),
                            nacl.encoding.HexEncoder)
-        except TypeError:
+        except Exception:
             # assume this means we have an address instead of a public key
             try:
                 answer = dns.resolver.query(
                     provider_pk, rdtype=dns.rdatatype.TXT)
-                fp = ''.join(answer.response.answer[0][0].strings)
-                vk = VerifyKey(fp.replace(':', '').lower(),
+                fp = b''.join(answer.response.answer[0][0].strings)
+                vk = VerifyKey(fp.decode('ascii').replace(':', '').lower(),
                                nacl.encoding.HexEncoder)
-            except:
+            except Exception:
                 raise TypeError('No valid public key for %s' % provider_name)
 
         question = dns.message.make_query(
@@ -93,8 +93,8 @@ class Resolver(object):
 
         now = time.time()
         for possible in answer.answer[0]:
-            possible = ''.join(possible.strings)
-            logging.debug('Possible cert %s' % possible.encode('hex'))
+            possible = b''.join(possible.strings)
+            logging.debug('Possible cert %s' % possible.hex())
             (magic, es_version, minor_version, signed) = \
                 struct.unpack('!4sHH%ss' % (len(possible) - 8), possible)
 
@@ -132,7 +132,7 @@ class Resolver(object):
 
         if not self.publickey:
             raise TypeError('No valid certificate found for %s:%s (%s)' %
-                            source, source_port, provider_name)
+                            (self.address, self.port, provider_name))
 
         logging.info('Selected certificate %s' % self.serial)
         self.__secretbox = Box(self.private, self.publickey)
@@ -197,11 +197,11 @@ class Resolver(object):
             padding = 0
 
         if padding:
-            message += '\x80' + '\x00' * padding
+            message += b'\x80' + b'\x00' * padding
 
         nonce = nacl.utils.random(DNSCRYPT_NONCE_SIZE)
         encrypted = self.__secretbox.encrypt(
-            message, nonce + '\x00' * DNSCRYPT_NONCE_SIZE)
+            message, nonce + b'\x00' * DNSCRYPT_NONCE_SIZE)
         # Remove the server nonce
         encrypted = encrypted[0:12] + encrypted[24:]
         return self.client_magic + self.private.public_key.encode() + encrypted
@@ -235,7 +235,7 @@ class Resolver(object):
             tcpmsg = struct.pack('!H', l) + wire
             dns.query._net_write(s, tcpmsg, expiration)
             ldata = dns.query._net_read(s, 2, expiration)
-            (l, ) = struct.unpacket('!H', ldata)
+            (l, ) = struct.unpack('!H', ldata)
             wire = dns.query._net_read(s, l, expiration)
         finally:
             if begin_time is None:
@@ -293,6 +293,5 @@ class Resolver(object):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    Resolver('208.67.222.222', '2.dnscrypt-cert.opendns.com', 'B735:1140:206F:225D:3E2B:D822:D7FD:691E:A1C3:3CC8:D666:8D0C:BE04:BFAB:CA43:FB79').query('google.com')
-    Resolver('45.76.35.212', '2.dnscrypt-cert.ns0.dnscrypt.nl', '4C84:FB8C:0511:5DFA:5F97:C5ED:0329:1370:C78A:BCD6:4E15:DD53:AB08:DE72:FB84:4ACA', port=443)
+    Resolver('208.67.220.220', '2.dnscrypt-cert.opendns.com', 'B735:1140:206F:225D:3E2B:D822:D7FD:691E:A1C3:3CC8:D666:8D0C:BE04:BFAB:CA43:FB79', port=443).query('google.com')
     Resolver('146.185.167.43', '2.dnscrypt-cert.securedns.eu', '2.dnscrypt-cert.securedns.eu', port=5353)
